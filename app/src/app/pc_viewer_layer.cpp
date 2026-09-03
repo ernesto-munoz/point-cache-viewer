@@ -1,7 +1,4 @@
 #include "pc_viewer_layer.h"
-#include "pc_viewer_layer.h"
-#include "pc_viewer_layer.h"
-#include "pc_viewer_layer.h"
 
 void PointCloudViewerLayer::LoadCurrentFrame()
 {
@@ -22,7 +19,6 @@ void PointCloudViewerLayer::LoadCurrentFrame()
 
 PointCloudViewerLayer::PointCloudViewerLayer() : Layer()
 {
-
 	camera_.position = Vector3 { 25.0f, 25.0f, 25.0f }; // position of the camera
 	camera_.target = Vector3 { 0.0f, 0.0f, 0.0f }; // look at
 	camera_.up = Vector3 { 0.0f, 1.0f, 0.0f }; // up in the world
@@ -37,18 +33,14 @@ PointCloudViewerLayer::PointCloudViewerLayer() : Layer()
 	vColor_loc_ = GetShaderLocation(point_shader_, "vColor");
 	uLightDir_loc_ = GetShaderLocation(point_shader_, "uLightDir");
 
-	cache_reader_.Open("C:/Users/aokuma/code/raylib-projects/point-cache-viewer/app/data/point_cloud.abc");
-	//cache_reader_.GetFrameCount();
-	//cache_reader_.GetPointCount(0);
-
 	// overkill but i wanted to do it like this
-	GetScheduler()->Schedule([this]() { 
+	GetScheduler()->Schedule([this]() {
+		if (!is_playing_) return;
 		NextFrame();
 		dirty_mesh_ = true;
-	}, 
-	std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<float>(1.0f / 25.0f))
+		},
+		std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<float>(1.0f / 25.0f))
 	);
-
 }
 
 PointCloudViewerLayer::~PointCloudViewerLayer()
@@ -77,7 +69,6 @@ void PointCloudViewerLayer::OnRender()
 		rlEnableBackfaceCulling();
 		rlDisablePointMode();
 
-
 		DrawGrid(20, 1.0f);
 	EndMode3D();
 }
@@ -93,14 +84,43 @@ void PointCloudViewerLayer::OnUpdate(float ts)
 
 void PointCloudViewerLayer::OnAttach()
 {
-	GetEventBus()->Subscribe<PlaybackSeekEvent>(
-		[this](const PlaybackSeekEvent& e) {
-			std::cout << e.progress << std::endl;
+	GetEventBus()->Subscribe<SeekEvent>(
+		[this](const SeekEvent& e) {
+			current_frame = e.frame;
 			return false;
 		});
+
+	GetEventBus()->Subscribe<OpenFileRequestEvent>(
+		[this](const OpenFileRequestEvent& e) {
+			LoadFile(e.file_path);
+			return false;
+		});
+
+	GetEventBus()->Subscribe<PauseEvent>(
+		[this](const PauseEvent& e) {
+			is_playing_ = false;
+			return false;
+		}
+	);
+
+	GetEventBus()->Subscribe<ResumeEvent>(
+		[this](const ResumeEvent& e) {
+			is_playing_ = true;
+			return false;
+		}
+	);
 }
 
 void PointCloudViewerLayer::NextFrame()
 {
-	current_frame += 1;
+	current_frame = (current_frame + 1) % cache_reader_.GetFrameCount();
+	GetEventBus()->Emit(NextFrameEvent(current_frame));
+}
+
+void PointCloudViewerLayer::LoadFile(std::string file_path)
+{
+	cache_reader_.Open(file_path);
+	// emit the event of a file opened
+	GetEventBus()->Emit(FileOpenedEvent(cache_reader_.GetFrameCount()));
+	is_playing_ = true;  // begin playing right away
 }

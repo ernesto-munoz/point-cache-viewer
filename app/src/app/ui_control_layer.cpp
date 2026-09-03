@@ -1,44 +1,62 @@
 #include "ui_control_layer.h"
-#include "ui_control_layer.h"
 
-void UIControLayer::OnRender()
+UIControlLayer::UIControlLayer()
 {
-	rlImGuiSetup(true); // true = dark theme
+    rlImGuiSetup(true); // true = dark theme
+    ImGui::GetStyle().ScaleAllSizes(1.5f);
+}
+
+void UIControlLayer::OnRender()
+{   
     rlImGuiBegin();
-
+    ImGui::Begin("Control Window", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
     
-    ImGui::Begin("Control Window");
-
-    ImGui::Text("Hola desde ImGui + Raylib!");
-    ImGui::Separator();
-
-    if (ImGui::Button("Click me")) {
+    if (ImGui::Button("Select...")) {
+        const char* filter_patterns[] = { "*.abc", "*.usd" };
+        const char* selected = tinyfd_openFileDialog(
+            "Select file...",
+            "C:/Users/aokuma/code/raylib-projects/point-cache-viewer/app/data/point_cloud.abc",
+            2, filter_patterns, "Data file (.abc, .usd)", 0);
+        if (selected) {
+            selected_path_ = selected;
+        }
     }
     ImGui::SameLine();
+    ImGui::TextUnformatted(selected_path_.c_str());
 
-
-    static float color[3] = { 0.1f, 0.1f, 0.1f };
-    if (ImGui::ColorEdit3("Color de fondo", color)) {
-        //clear_color = Color{
-        //    (unsigned char)(color[0] * 255),
-        //    (unsigned char)(color[1] * 255),
-        //    (unsigned char)(color[2] * 255),
-        //    255
-        //};
+    ImGui::BeginDisabled(selected_path_.empty());
+    if (ImGui::Button("Load")) {
+        GetEventBus()->Emit(OpenFileRequestEvent(selected_path_));
     }
-    DrawVideoControlBar(GetScreenWidth(), GetScreenHeight());
-
+    ImGui::EndDisabled();
     ImGui::End();
+
+    DrawVideoControlBar(GetScreenWidth(), GetScreenHeight());
 
     rlImGuiEnd();
 }
 
-void UIControLayer::DrawVideoControlBar(float screen_width, float screen_height)
+void UIControlLayer::OnAttach()
+{
+    GetEventBus()->Subscribe<FileOpenedEvent>(
+        [this](const FileOpenedEvent& e) {
+            set_duration(e.duration_frames);
+            return false;
+        });
+
+    GetEventBus()->Subscribe<NextFrameEvent>(
+        [this](const NextFrameEvent& e) {
+            set_progress(e.next_frame / duration_frames_);
+            return false;
+        }
+    );
+}
+
+void UIControlLayer::DrawVideoControlBar(float screen_width, float screen_height)
 {
     const float bar_height = 40.0f;
     ImGui::SetNextWindowPos(ImVec2(0, screen_height - bar_height));
     ImGui::SetNextWindowSize(ImVec2(screen_width, screen_height));
-
 
     // this flags for the desired visualization of the window
     ImGuiWindowFlags flags =
@@ -59,13 +77,14 @@ void UIControLayer::DrawVideoControlBar(float screen_width, float screen_height)
     ImGui::Begin("Video Controls", nullptr, flags);
     if (ImGui::Button(is_playing_ ? "Pause" : "Play")) {
         is_playing_ = !is_playing_;
+        is_playing_ ? GetEventBus()->Emit(ResumeEvent()) : GetEventBus()->Emit(PauseEvent());
     }
     ImGui::SameLine();
 
     ImGui::SetNextItemWidth(-100); // space for the time
     if (ImGui::SliderFloat("##progress", &progress_, 0.0f, 1.0f, "")) {
-        GetEventBus()->Emit(PlaybackSeekEvent(progress_));
-
+        //static_cast<int>(cache_reader_.GetFrameCount() * e.progress)
+        GetEventBus()->Emit(SeekEvent(duration_frames_ * progress_));
     }
 
     ImGui::SameLine();

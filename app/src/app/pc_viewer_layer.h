@@ -14,6 +14,9 @@
 
 class PointCloudViewerLayer : public core::Layer {
 	AlembicCacheReader cache_reader_;
+	bool is_playing_ = false;
+	unsigned int current_frame = 0;
+
 	FrameData frame_data_;
 	Camera3D camera_ = { 0 };
 	Model model_;
@@ -22,7 +25,6 @@ class PointCloudViewerLayer : public core::Layer {
 	int uPointSize_loc_;
 	int vColor_loc_;
 	int uLightDir_loc_;
-	unsigned int current_frame = 0;
 	bool dirty_mesh_ = true;
 
 
@@ -36,4 +38,5 @@ public:
 	void OnAttach() override;
 
 	void NextFrame();
+	void LoadFile(std::string file_path);
 };

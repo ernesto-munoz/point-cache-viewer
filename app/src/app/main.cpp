@@ -4,6 +4,8 @@
 #include "ui_control_layer.h"
 
 int main() {
+	SetTraceLogLevel(LOG_WARNING);
+
 	core::ApplicationSpecification app_spec;
 	app_spec.window_specification.width = 1920;
 	app_spec.window_specification.height = 1080;
@@ -12,7 +14,7 @@ int main() {
 
 	core::Application application(app_spec);
 	application.PushLayer<PointCloudViewerLayer>();
-	application.PushLayer<UIControLayer>();
+	application.PushLayer<UIControlLayer>();
 	application.PushLayer<DebugLayer>();
 	application.Run();
 }

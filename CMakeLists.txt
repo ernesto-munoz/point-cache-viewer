@@ -26,7 +26,7 @@ file(GLOB_RECURSE APP_SOURCES CONFIGURE_DEPENDS "app/*.cpp")
 file(GLOB_RECURSE APP_HEADERS CONFIGURE_DEPENDS "app/*.h")
 add_executable (point-cache-viewer ${APP_SOURCES})
 target_compile_features(point-cache-viewer PUBLIC cxx_std_20)
-target_link_libraries(point-cache-viewer PUBLIC core rlimgui imgui)
+target_link_libraries(point-cache-viewer PUBLIC core rlimgui imgui tinyfiledialogs)
 
 
 # TODO: Add tests and install targets if needed.

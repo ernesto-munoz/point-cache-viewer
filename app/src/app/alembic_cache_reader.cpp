@@ -38,15 +38,15 @@ bool AlembicCacheReader::Open(const std::string& path)
 		
 	impl->archive = Alembic::Abc::IArchive(Alembic::AbcCoreOgawa::ReadArchive(), path);
 	impl->CollectMeshes(impl->archive.getTop());
-	
 	return true;
 }
 
 int AlembicCacheReader::GetFrameCount() const
 {
+	if (!impl->archive) return 0;
 	size_t numTimeSamplings = impl->archive.getNumTimeSamplings();
-	std::cout << "Num Time Samplings: " << numTimeSamplings << std::endl;
-	std::cout << "Max Samples: " << impl->archive.getMaxNumSamplesForTimeSamplingIndex(1) << std::endl;
+	//std::cout << "Num Time Samplings: " << numTimeSamplings << std::endl;
+	//std::cout << "Max Samples: " << impl->archive.getMaxNumSamplesForTimeSamplingIndex(1) << std::endl;
 	return impl->archive.getMaxNumSamplesForTimeSamplingIndex(1);
 }
 

@@ -87,6 +87,7 @@ void PointCloudViewerLayer::OnAttach()
 	GetEventBus()->Subscribe<SeekEvent>(
 		[this](const SeekEvent& e) {
 			current_frame = e.frame;
+			LoadCurrentFrame();
 			return false;
 		});
 

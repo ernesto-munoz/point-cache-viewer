@@ -26,8 +26,8 @@ PointCloudViewerLayer::PointCloudViewerLayer() : Layer()
 	camera_.projection = CAMERA_PERSPECTIVE;
 	
 	point_shader_ = LoadShader(
-		"C:/Users/aokuma/code/raylib-projects/point-cache-viewer/app/data/shaders/point2.vs",
-		"C:/Users/aokuma/code/raylib-projects/point-cache-viewer/app/data/shaders/point2.fs"
+		"data/shaders/point2.vs",
+		"data/shaders/point2.fs"
 	);
 	uPointSize_loc_ = GetShaderLocation(point_shader_, "uPointSize");
 	vColor_loc_ = GetShaderLocation(point_shader_, "vColor");

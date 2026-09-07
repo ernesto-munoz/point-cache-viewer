@@ -33,6 +33,6 @@ private:
 	float progress_ = 0.0f;
 	float duration_frames_ = 250;
 
-	std::string selected_path_ = "C:/Users/aokuma/code/raylib-projects/point-cache-viewer/app/data/point_cloud.abc";
+	std::string selected_path_ = "data/point_cloud.abc";
 
 };

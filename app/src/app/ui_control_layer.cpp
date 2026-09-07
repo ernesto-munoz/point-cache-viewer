@@ -15,7 +15,7 @@ void UIControlLayer::OnRender()
         const char* filter_patterns[] = { "*.abc", "*.usd" };
         const char* selected = tinyfd_openFileDialog(
             "Select file...",
-            "C:/Users/aokuma/code/raylib-projects/point-cache-viewer/app/data/point_cloud.abc",
+            selected_path_.c_str(),
             2, filter_patterns, "Data file (.abc, .usd)", 0);
         if (selected) {
             selected_path_ = selected;

@@ -28,5 +28,8 @@ add_executable (point-cache-viewer ${APP_SOURCES})
 target_compile_features(point-cache-viewer PUBLIC cxx_std_20)
 target_link_libraries(point-cache-viewer PUBLIC core rlimgui imgui tinyfiledialogs)
 
-
 # TODO: Add tests and install targets if needed.
+
+add_custom_command(TARGET point-cache-viewer POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/app/data $<TARGET_FILE_DIR:point-cache-viewer>/data
+)

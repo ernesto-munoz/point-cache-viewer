@@ -17,7 +17,7 @@ vec3 hash3(vec3 p) {
 }
 
 void main() {
-    vColor = 0.3 + 0.7 * hash3(vertexPosition); // color random estable por punto
+    vColor = 0.3 + 0.7 * hash3(vec3(gl_VertexID)); // color random estable por punto
 
     gl_Position = mvp * vec4(vertexPosition, 1.0);
     gl_PointSize = uPointSize;

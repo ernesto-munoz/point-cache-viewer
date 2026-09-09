@@ -24,9 +24,9 @@ class PointCloudViewerLayer : public core::Layer {
 	Model model_;
 	Mesh mesh_;
 	Shader point_shader_;
-	int uPointSize_loc_;
-	int vColor_loc_;
-	int uLightDir_loc_;
+	int point_size_loc_;
+	int color_loc_;
+	int light_dir_loc_;
 	bool dirty_mesh_ = true;
 
 

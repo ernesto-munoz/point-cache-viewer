@@ -30,9 +30,9 @@ PointCloudViewerLayer::PointCloudViewerLayer() : Layer()
 		"data/shaders/point2.vs",
 		"data/shaders/point2.fs"
 	);
-	uPointSize_loc_ = GetShaderLocation(point_shader_, "uPointSize");
-	vColor_loc_ = GetShaderLocation(point_shader_, "vColor");
-	uLightDir_loc_ = GetShaderLocation(point_shader_, "uLightDir");
+	point_size_loc_ = GetShaderLocation(point_shader_, "uPointSize");
+	color_loc_ = GetShaderLocation(point_shader_, "vColor");
+	light_dir_loc_ = GetShaderLocation(point_shader_, "uLightDir");
 
 	// overkill but i wanted to do it like this
 	GetScheduler()->Schedule([this]() {
@@ -57,9 +57,9 @@ void PointCloudViewerLayer::OnRender()
 	float point_size = POINT_SIZE;
 	Vector4 tint = { 1.0f, 0.0f, 0.0f, 1.0f };
 	Vector3 lightDir = { 1.0f, 1.0f, 1.0f }; // light direction
-	SetShaderValue(point_shader_, uPointSize_loc_, &point_size, SHADER_UNIFORM_FLOAT);
-	//SetShaderValue(point_shader_, vColor_loc_, &tint, SHADER_UNIFORM_VEC4);
-	SetShaderValue(point_shader_, uLightDir_loc_, &lightDir, SHADER_UNIFORM_VEC3);
+	SetShaderValue(point_shader_, point_size_loc_, &point_size, SHADER_UNIFORM_FLOAT);
+	SetShaderValue(point_shader_, color_loc_, &tint, SHADER_UNIFORM_VEC4);
+	SetShaderValue(point_shader_, light_dir_loc_, &lightDir, SHADER_UNIFORM_VEC3);
 	
 	BeginMode3D(camera_);
 		rlEnablePointMode();

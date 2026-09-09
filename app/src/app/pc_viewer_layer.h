@@ -15,11 +15,12 @@
 #define POINT_SIZE 22.0f
 
 class PointCloudViewerLayer : public core::Layer {
+private:
 	std::unique_ptr<CacheReaderInterface> cache_reader_;
 	bool is_playing_ = false;
 	unsigned int current_frame = 0;
 
-	FrameData frame_data_;
+	std::unique_ptr<FrameData> frame_data_;
 	Camera3D camera_ = { 0 };
 	Model model_;
 	Mesh mesh_;
@@ -29,8 +30,7 @@ class PointCloudViewerLayer : public core::Layer {
 	int light_dir_loc_;
 	bool dirty_mesh_ = true;
 
-
-	void LoadCurrentFrame();
+	void LoadFrame(unsigned int frame);
 
 public:
 	PointCloudViewerLayer();

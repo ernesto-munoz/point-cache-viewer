@@ -47,7 +47,7 @@ int AlembicCacheReader::GetFrameCount() const
 	size_t numTimeSamplings = impl->archive.getNumTimeSamplings();
 	//std::cout << "Num Time Samplings: " << numTimeSamplings << std::endl;
 	//std::cout << "Max Samples: " << impl->archive.getMaxNumSamplesForTimeSamplingIndex(1) << std::endl;
-	return impl->archive.getMaxNumSamplesForTimeSamplingIndex(1);
+	return static_cast<int>(impl->archive.getMaxNumSamplesForTimeSamplingIndex(1));
 }
 
 int AlembicCacheReader::GetPointCount(size_t frame_index) const
@@ -59,9 +59,9 @@ int AlembicCacheReader::GetPointCount(size_t frame_index) const
 	return 0;
 }
 
-FrameData AlembicCacheReader::ReadFrame(size_t frame_index)
+std::unique_ptr<FrameData> AlembicCacheReader::ReadFrame(size_t frame_index)
 {
-	FrameData fd;
+	std::unique_ptr<FrameData> fd = std::make_unique<FrameData>();
 	for (const auto& a : impl->meshes_by_path)
 	{
 		Alembic::AbcCoreAbstract::index_t frame_index_t = frame_index;
@@ -71,9 +71,9 @@ FrameData AlembicCacheReader::ReadFrame(size_t frame_index)
 		auto positions = sample.getPositions();
 		for (size_t i = 0; i < positions->size(); ++i) {
 			const Imath::V3f& p = (*positions)[i];
-			fd.positions.emplace_back(p.x * 10);
-			fd.positions.emplace_back(p.y * 10);
-			fd.positions.emplace_back(p.z * 10);
+			fd->positions.emplace_back(p.x * 10);
+			fd->positions.emplace_back(p.y * 10);
+			fd->positions.emplace_back(p.z * 10);
 		}
 	}
 	return fd;

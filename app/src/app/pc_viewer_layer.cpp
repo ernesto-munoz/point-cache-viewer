@@ -1,18 +1,21 @@
 #include "pc_viewer_layer.h"
+#include "core/utils.h"
 
-void PointCloudViewerLayer::LoadCurrentFrame()
+void PointCloudViewerLayer::LoadFrame(unsigned int frame)
 {
 	if (!cache_reader_) return;
-	frame_data_ = cache_reader_->ReadFrame(current_frame);
+	frame_data_ = cache_reader_->ReadFrame(frame);
 
-	int count = frame_data_.positions.size() / 3;
+	int count = frame_data_->positions.size() / 3;
+	if(IsModelValid(model_)) UnloadModel(model_);
+
 	mesh_ = {
 		.vertexCount = count,
 		.triangleCount = 1,
 		.vertices = (float*)MemAlloc(count * 3 * sizeof(float)),
 		//.colors = (unsigned char*)MemAlloc(count * 4 * sizeof(unsigned char)),
 	};
-	std::memcpy(mesh_.vertices, frame_data_.positions.data(), count * 3 * sizeof(float));
+	std::memcpy(mesh_.vertices, frame_data_->positions.data(), count * 3 * sizeof(float));
 	UploadMesh(&mesh_, false);
 	model_ = LoadModelFromMesh(mesh_);
 	model_.materials[0].shader = point_shader_;
@@ -34,13 +37,13 @@ PointCloudViewerLayer::PointCloudViewerLayer() : Layer()
 	color_loc_ = GetShaderLocation(point_shader_, "vColor");
 	light_dir_loc_ = GetShaderLocation(point_shader_, "uLightDir");
 
-	// overkill but i wanted to do it like this
+	// overkill but i wanted to do it this way
 	GetScheduler()->Schedule([this]() {
 		if (!is_playing_) return;
 		NextFrame();
 		dirty_mesh_ = true;
-		},
-		std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<float>(1.0f / 25.0f))
+	},
+	std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::duration<float>(1.0f / 25.0f))
 	);
 }
 
@@ -77,10 +80,9 @@ void PointCloudViewerLayer::OnRender()
 void PointCloudViewerLayer::OnUpdate(float ts)
 {
 	if (dirty_mesh_) {
-		LoadCurrentFrame();
+		LoadFrame(current_frame);
 		dirty_mesh_ = false;
 	}
-
 }
 
 void PointCloudViewerLayer::OnAttach()
@@ -88,7 +90,7 @@ void PointCloudViewerLayer::OnAttach()
 	GetEventBus()->Subscribe<SeekEvent>(
 		[this](const SeekEvent& e) {
 			current_frame = e.frame;
-			LoadCurrentFrame();
+			LoadFrame(current_frame);
 			return false;
 		});
 

@@ -14,5 +14,5 @@ public:
 	bool Open(const std::string& path) override;
 	virtual int GetFrameCount() const override;
 	virtual int GetPointCount(size_t frame_index) const override;
-	virtual FrameData ReadFrame(size_t frame_index) override;
+	virtual std::unique_ptr<FrameData> ReadFrame(size_t frame_index) override;
 };

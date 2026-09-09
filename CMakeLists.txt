@@ -2,6 +2,7 @@
 # project specific logic here.
 #
 cmake_minimum_required (VERSION 3.10)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Enable Hot Reload for MSVC compilers if supported.
 if (POLICY CMP0141)
@@ -24,12 +25,22 @@ target_include_directories(core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/core/src)
 
 file(GLOB_RECURSE APP_SOURCES CONFIGURE_DEPENDS "app/*.cpp")
 file(GLOB_RECURSE APP_HEADERS CONFIGURE_DEPENDS "app/*.h")
+list(REMOVE_ITEM APP_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/app/src/app/usd_cache_reader.cpp")
+list(REMOVE_ITEM APP_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/app/src/app/usd_cache_reader.h")
 add_executable (point-cache-viewer ${APP_SOURCES})
 target_compile_features(point-cache-viewer PUBLIC cxx_std_20)
+# target_link_libraries(point-cache-viewer PUBLIC core rlimgui imgui tinyfiledialogs usd usdGeom sdf tf)
 target_link_libraries(point-cache-viewer PUBLIC core rlimgui imgui tinyfiledialogs)
+target_include_directories(point-cache-viewer SYSTEM PRIVATE ${PXR_INCLUDE_DIRS})
 
 # TODO: Add tests and install targets if needed.
 
 add_custom_command(TARGET point-cache-viewer POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/app/data $<TARGET_FILE_DIR:point-cache-viewer>/data
+)
+add_custom_command(TARGET point-cache-viewer POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "C:/Users/aokuma/code/thirdparty/OpenUSD/install/lib" "$<TARGET_FILE_DIR:point-cache-viewer>"
+)
+add_custom_command(TARGET point-cache-viewer POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory "C:/Users/aokuma/code/thirdparty/OpenUSD/install/bin" "$<TARGET_FILE_DIR:point-cache-viewer>"
 )

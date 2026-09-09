@@ -12,11 +12,11 @@ void UIControlLayer::OnRender()
     ImGui::Begin("Control Window", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
     
     if (ImGui::Button("Select...")) {
-        const char* filter_patterns[] = { "*.abc", "*.usd" };
+        const char* filter_patterns[] = { "*.abc", "*.usd*"};
         const char* selected = tinyfd_openFileDialog(
             "Select file...",
             selected_path_.c_str(),
-            2, filter_patterns, "Data file (.abc, .usd)", 0);
+            2, filter_patterns, "Data file (.abc, .usd, .usda, .usdc)", 0);
         if (selected) {
             selected_path_ = selected;
         }

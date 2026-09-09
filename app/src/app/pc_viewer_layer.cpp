@@ -2,7 +2,8 @@
 
 void PointCloudViewerLayer::LoadCurrentFrame()
 {
-	frame_data_ = cache_reader_.ReadFrame(current_frame);
+	if (!cache_reader_) return;
+	frame_data_ = cache_reader_->ReadFrame(current_frame);
 
 	int count = frame_data_.positions.size() / 3;
 	mesh_ = {
@@ -114,14 +115,25 @@ void PointCloudViewerLayer::OnAttach()
 
 void PointCloudViewerLayer::NextFrame()
 {
-	current_frame = (current_frame + 1) % cache_reader_.GetFrameCount();
+	current_frame = (current_frame + 1) % cache_reader_->GetFrameCount();
 	GetEventBus()->Emit(NextFrameEvent(current_frame));
 }
 
 void PointCloudViewerLayer::LoadFile(std::string file_path)
 {
-	cache_reader_.Open(file_path);
+	std::string ext = std::filesystem::path(file_path).extension().string();
+
+	if (ext == ".abc") {
+		cache_reader_ = std::make_unique<AlembicCacheReader>();
+	}
+	//if (ext == ".usd" || ext == ".usda" || ext == ".usdc") {
+	//	cache_reader_ = std::make_unique<USDCacheReader>();
+	//}
+
+	cache_reader_->Open(file_path);
 	// emit the event of a file opened
-	GetEventBus()->Emit(FileOpenedEvent(cache_reader_.GetFrameCount()));
+	GetEventBus()->Emit(FileOpenedEvent(cache_reader_->GetFrameCount()));
 	is_playing_ = true;  // begin playing right away
+
+	std::cout << cache_reader_->GetFrameCount() << std::endl;
 }

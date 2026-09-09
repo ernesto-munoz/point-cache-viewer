@@ -65,7 +65,7 @@ add_library(rlimgui STATIC
 target_include_directories(rlimgui PUBLIC ${rlimgui_SOURCE_DIR})
 target_link_libraries(rlimgui PUBLIC imgui raylib)
 
-
+# file dialog simple api
 FetchContent_Declare(
     tinyfiledialogs
     GIT_REPOSITORY https://github.com/native-toolkit/tinyfiledialogs.git
@@ -74,4 +74,9 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(tinyfiledialogs)
 
 add_library(tinyfiledialogs STATIC ${tinyfiledialogs_SOURCE_DIR}/tinyfiledialogs.c)
+target_compile_options(tinyfiledialogs PRIVATE /FIwindows.h /FIcommdlg.h)
 target_include_directories(tinyfiledialogs PUBLIC ${tinyfiledialogs_SOURCE_DIR})
+
+# universal scene description api USD
+# set(CMAKE_PREFIX_PATH "C:/Users/aokuma/code/thirdparty/OpenUSD/install" ${CMAKE_PREFIX_PATH})
+# find_package(pxr REQUIRED)

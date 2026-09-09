@@ -2,18 +2,20 @@
 
 #include <iostream>
 #include <memory>
+#include <filesystem>
 #include "core/layer.h"
 #include "core/utils.h"
 #include "core/event_bus.h"
 #include "raylib.h"
 #include "rlgl.h"
 #include "alembic_cache_reader.h"
+//#include "usd_cache_reader.h"
 #include "events.h"
 
 #define POINT_SIZE 22.0f
 
 class PointCloudViewerLayer : public core::Layer {
-	AlembicCacheReader cache_reader_;
+	std::unique_ptr<CacheReaderInterface> cache_reader_;
 	bool is_playing_ = false;
 	unsigned int current_frame = 0;
 

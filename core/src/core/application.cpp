@@ -67,6 +67,23 @@ namespace core {
 			MouseButtonReleasedEvent event(0, GetMouseX(), GetMouseY());
 			RaiseEvent(event);
 		}
+
+		for (int key = KEY_SPACE; key <= KEY_KB_MENU; key++)
+		{
+			if (IsKeyPressed(key)) {
+				KeyPressedEvent event(key, false);
+				RaiseEvent(event);
+			}
+			else if (IsKeyPressedRepeat(key)) {
+				KeyPressedEvent event(key, true);
+				RaiseEvent(event);
+			}
+			
+			if (IsKeyReleased(key)) {
+				KeyReleasedEvent event(key);
+				RaiseEvent(event);
+			}
+		}
 	}
 
 	void Application::RaiseEvent(Event& event)

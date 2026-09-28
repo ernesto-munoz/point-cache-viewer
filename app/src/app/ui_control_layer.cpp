@@ -4,6 +4,17 @@ UIControlLayer::UIControlLayer()
 {
     rlImGuiSetup(true); // true = dark theme
     ImGui::GetStyle().ScaleAllSizes(1.5f);
+
+    GetEventSystem().Subscribe<core::KeyReleasedEvent>(
+        [this](const core::KeyReleasedEvent& e) {
+            std::cout << e.GetKeyCode() << std::endl;
+            if (e.GetKeyCode() == KEY_SPACE) {
+                is_playing_ = !is_playing_;
+                is_playing_ ? GetEventBus()->Emit(ResumeEvent()) : GetEventBus()->Emit(PauseEvent());
+            }
+            return true;
+        }
+    );
 }
 
 void UIControlLayer::OnRender()

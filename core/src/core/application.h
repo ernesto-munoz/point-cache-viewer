@@ -43,16 +43,16 @@ namespace core {
 		template<typename TLayer>
 		requires(std::is_base_of_v<Layer, TLayer>)
 		void PushLayer() {
-			std::unique_ptr<TLayer> layer = std::make_unique<TLayer>();
+			auto layer = std::make_unique<TLayer>();
 			layer->Attach(event_bus_);
 			layer_stack_.push_back(std::move(layer)); // cast to rvalue to allow the move of vector
 		}
 
 		template<typename TLayer>
 		requires(std::is_base_of_v<Layer, TLayer>)
-		TLayer* GetLayer() {
+		auto* GetLayer() {
 			for (const auto& layer : layer_stack_) {
-				if (auto casted = dynamic_cast	<TLayer*>(layer.get()))
+				if (auto casted = dynamic_cast<TLayer*>(layer.get()))
 					return casted;
 			}
 			return nullptr;

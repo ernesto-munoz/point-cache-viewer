@@ -57,7 +57,7 @@ namespace core {
 	void Application::PollEvents()
 	{
 		// check for movement event
-		const Vector2 &pos = GetMouseDelta();
+		const auto &pos = GetMouseDelta();
 		if (pos.x != 0 || pos.y != 0) {
 			MouseMovedEvent event(GetMouseX(), GetMouseY());
 			RaiseEvent(event);

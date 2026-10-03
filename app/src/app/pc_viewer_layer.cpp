@@ -6,9 +6,9 @@ void PointCloudViewerLayer::LoadFrame(unsigned int frame)
 	if (!cache_reader_) return;
 	frame_data_ = cache_reader_->ReadFrame(frame);
 
-	int count = frame_data_->positions.size() / 3;
 	if(IsModelValid(model_)) UnloadModel(model_);
 
+	int count = frame_data_->positions.size() / 3;
 	mesh_ = {
 		.vertexCount = count,
 		.triangleCount = 1,
@@ -57,9 +57,9 @@ void PointCloudViewerLayer::OnRender()
 	DrawText(TextFormat("PC Viewer Layer"), 30, 60, 30, GREEN);
 	UpdateCamera(&camera_, CAMERA_ORBITAL);
 
-	float point_size = POINT_SIZE;
-	Vector4 tint = { 1.0f, 0.0f, 0.0f, 1.0f };
-	Vector3 lightDir = { 1.0f, 1.0f, 1.0f }; // light direction
+	auto point_size = POINT_SIZE;
+	auto tint = Vector4 { 1.0f, 0.0f, 0.0f, 1.0f };
+	auto lightDir = Vector3 { 1.0f, 1.0f, 1.0f }; // light direction
 	SetShaderValue(point_shader_, point_size_loc_, &point_size, SHADER_UNIFORM_FLOAT);
 	SetShaderValue(point_shader_, color_loc_, &tint, SHADER_UNIFORM_VEC4);
 	SetShaderValue(point_shader_, light_dir_loc_, &lightDir, SHADER_UNIFORM_VEC3);

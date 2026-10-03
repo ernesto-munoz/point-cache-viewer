@@ -30,7 +30,7 @@ USDCacheReader::~USDCacheReader() = default;
 bool USDCacheReader::Open(const std::string& path)
 {
 	{
-		core::ElapsedTime e("Open USD Cache Reader {} ms");
+		auto e = core::ElapsedTime("Open USD Cache Reader {} ms");
 		impl->stage = UsdStage::Open(path);
 		if (!impl->stage) return false;
 		impl->CollectMeshes();

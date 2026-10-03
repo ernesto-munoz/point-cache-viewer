@@ -6,13 +6,13 @@
 int main() {
 	SetTraceLogLevel(LOG_WARNING);
 
-	core::ApplicationSpecification app_spec;
+	auto app_spec = core::ApplicationSpecification();
 	app_spec.window_specification.width = 1920;
 	app_spec.window_specification.height = 1080;
 	app_spec.name = "Duplication";
 	app_spec.window_specification.title = "Duplication Window";
 
-	core::Application application(app_spec);
+	auto application = core::Application(app_spec);
 	application.PushLayer<PointCloudViewerLayer>();
 	application.PushLayer<UIControlLayer>();
 	application.PushLayer<DebugLayer>();

@@ -13,8 +13,8 @@ struct AlembicCacheReader::Impl {
 	std::map<std::string, Alembic::AbcGeom::IPolyMesh> meshes_by_path;
 
 	void CollectMeshes(Alembic::Abc::IObject top_object) {
-		size_t num_children = top_object.getNumChildren();
-		for (size_t i = 0; i < num_children; ++i)
+		auto num_children = top_object.getNumChildren();
+		for (auto i = 0; i < num_children; ++i)
 		{
 			Alembic::Abc::IObject child = top_object.getChild(i);
 			if (Alembic::AbcGeom::IPolyMesh::matches(child.getHeader())) {
@@ -44,9 +44,7 @@ bool AlembicCacheReader::Open(const std::string& path)
 int AlembicCacheReader::GetFrameCount() const
 {
 	if (!impl->archive) return 0;
-	size_t numTimeSamplings = impl->archive.getNumTimeSamplings();
-	//std::cout << "Num Time Samplings: " << numTimeSamplings << std::endl;
-	//std::cout << "Max Samples: " << impl->archive.getMaxNumSamplesForTimeSamplingIndex(1) << std::endl;
+	auto numTimeSamplings = impl->archive.getNumTimeSamplings();
 	return static_cast<int>(impl->archive.getMaxNumSamplesForTimeSamplingIndex(1));
 }
 

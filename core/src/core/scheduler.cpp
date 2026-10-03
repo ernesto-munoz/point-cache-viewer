@@ -2,7 +2,7 @@
 
 void core::Scheduler::Schedule(Callback cb, std::chrono::milliseconds interval)
 {
-	std::lock_guard<std::mutex> lock(mtx_);
+	auto lock = std::lock_guard<std::mutex>(mtx_);
 	tasks_.push(
 		{ std::chrono::steady_clock::now() + interval, interval, std::move(cb)}
 	);
@@ -11,7 +11,7 @@ void core::Scheduler::Schedule(Callback cb, std::chrono::milliseconds interval)
 
 void core::Scheduler::Run()
 {
-	std::unique_lock<std::mutex> lock(mtx_);
+	auto lock = std::unique_lock<std::mutex>(mtx_);
 	while (running_) {
 		if (tasks_.empty()) {
 			cv_.wait(lock);
@@ -34,7 +34,7 @@ void core::Scheduler::Run()
 void core::Scheduler::Stop()
 {
 	{
-		std::lock_guard<std::mutex> lock(mtx_);
+		auto lock = std::lock_guard<std::mutex>(mtx_);
 		running_ = false;
 	}
 	cv_.notify_one();
